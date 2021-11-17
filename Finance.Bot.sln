@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Bot", "Finance.Bot\Finance.Bot.csproj", "{5545995C-5E9C-488D-9677-9EF8C902E63F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finance.Bot.Web", "Finance.Bot\Finance.Bot.Web.csproj", "{5545995C-5E9C-488D-9677-9EF8C902E63F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

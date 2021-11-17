@@ -29,7 +29,8 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "publishAllPorts": true,
-      "useSSL": true
+      "useSSL": true,
+      "DockerfileRunArguments": "-e FINBOT_Token -e FINBOT_Host -p 49165:443"
     }
   }
 }

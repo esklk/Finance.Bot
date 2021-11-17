@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Finance.Bot/Finance.Bot.csproj", "Finance.Bot/"]
-RUN dotnet restore "Finance.Bot/Finance.Bot.csproj"
+COPY ["Finance.Bot/Finance.Bot.Web.csproj", "Finance.Bot.Web/"]
+RUN dotnet restore "Finance.Bot/Finance.Bot.Web.csproj"
 COPY . .
-WORKDIR "/src/Finance.Bot"
-RUN dotnet build "Finance.Bot.csproj" -c Release -o /app/build
+WORKDIR "/src/Finance.Bot.Web"
+RUN dotnet build "Finance.Bot.Web.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Finance.Bot.csproj" -c Release -o /app/publish
+RUN dotnet publish "Finance.Bot.Web.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Finance.Bot.dll"]
+ENTRYPOINT ["dotnet", "Finance.Bot.Web.dll"]

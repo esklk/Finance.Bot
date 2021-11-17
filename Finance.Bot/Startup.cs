@@ -1,55 +1,61 @@
+using Finance.Bot.Web.Configuration.Implementation;
+using Finance.Bot.Web.Controllers;
+using Finance.Bot.Web.Services.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Telegram.Bot;
 
-namespace Finance.Bot
+namespace Finance.Bot.Web
 {
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            BotConfiguration = configuration.Get<BotConfiguration>();
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        private BotConfiguration BotConfiguration { get; }
+
+       public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            services.AddSingleton(BotConfiguration);
+
+            services.AddHostedService<ConfigureWebhookService>();
+
+            services.AddHttpClient("tgwebhook")
+                    .AddTypedClient<ITelegramBotClient>(httpClient
+                        => new TelegramBotClient(BotConfiguration.Token, httpClient));
+
+            services.AddControllers()
+                .AddNewtonsoftJson();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseCors();
 
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllerRoute(name: "tgwebhook", pattern: $"bot/{BotConfiguration.Token}", new 
+                { 
+                    controller = nameof(WebhookController).Replace("Controller", string.Empty), 
+                    action = nameof(WebhookController.OnUpdate) 
+                });
+
+                endpoints.MapControllers();
             });
         }
     }
